@@ -35,7 +35,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.knifwin.calc_total.released.connect(self.calc_total)
 
         self.knifwin.tableWidget.currentCellChanged.connect(self.calc_total)
-        # self.knifwin.tableWidget.cellClicked.connect(self.calc_total)
 
         self.knifwin.np_button.released.connect(self.next_player)
 
@@ -44,11 +43,8 @@ class MainWindow(QtWidgets.QMainWindow):
         PLAYER = player_count
         for i in range(int(player_count)):
             PLAYERS.append(i)
-        # print(PLAYERS, len(PLAYERS))
 
         self.knifwin.tableWidget.setColumnCount(player_count + 1)
-        # PLAYERS = PLAYERS[2:]
-        # print(PLAYERS)
 
         brush = QtGui.QBrush(QtGui.QColor(125, 125, 125))
         brush.setStyle(QtCore.Qt.Dense4Pattern)
@@ -84,7 +80,6 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.knifwin.tableWidget.item(18, item + 1).setBackground(brush2)
 
     def roll(self):
-        # throw_string = ''
         font = QtGui.QFont()
         font.setPointSize(30)
 
@@ -105,10 +100,6 @@ class MainWindow(QtWidgets.QMainWindow):
             self.knifwin.fifth_roll.setFont(font)
         self.calc_top()
         self.calc_bottom()
-
-    #  for throw in THROWS:
-    #    throw_string += str(throw)
-    # print(throw_string)
 
     def reset_dices(self):
         self.knifwin.first_roll.setDefault(False)
