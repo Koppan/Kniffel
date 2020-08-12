@@ -1,3 +1,2 @@
 # Kniffel
-A multiplayer dice game 
-P.S: my first try on a game in code
+A multiplayer dice game to be played locally on your Computer!
