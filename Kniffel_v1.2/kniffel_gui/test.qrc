@@ -1,0 +1,18 @@
+<RCC>
+    <qresource prefix="/">
+        <file>test_btn_bg</file>
+        <file>dices-20200812-130256.piskel</file>
+        <file>1.png</file>
+        <file>2.png</file>
+        <file>3.png</file>
+        <file>4.png</file>
+        <file>5.png</file>
+        <file>6.png</file>
+        <file>1_pressed.png</file>
+        <file>2_pressed.png</file>
+        <file>3_pressed.png</file>
+        <file>4_pressed.png</file>
+        <file>5_pressed.png</file>
+        <file>6_pressed.png</file>
+    </qresource>
+</RCC>
