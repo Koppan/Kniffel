@@ -1,44 +1,43 @@
 import sys
 from qtpy import QtWidgets
 from kniffel_gui.mainwindow import Ui_MainWindow
+from setup_gui.setup_window import Ui_Setup_Window
 from random import choice
 from PyQt5 import QtGui, QtCore
 import os
 from time import sleep
 
-app = QtWidgets.QApplication(sys.argv)
-
 FIRST_ROLL = 1
 dice_count = 5
-THROWS = ['_', '_', '_', '_', '_']
+# THROWS = ['_', '_', '_', '_', '_']
 throws = 0
 PLAYER = 1
 
 PLAYERS = []
 
-file_dice_1 = 'kniffel_gui/1.png'
+started = False
+
+brush_1 = None
+brush_2 = None
+brush_3 = None
+
+dice_1 = 'kniffel_gui/1.png'
 dice_1_pressed = 'kniffel_gui/1_pressed.png'
-dice_1 = os.path.join(os.path.abspath(os.getcwd()), file_dice_1)
 
-file_dice_2 = 'kniffel_gui/2.png'
+dice_2 = 'kniffel_gui/2.png'
 dice_2_pressed = 'kniffel_gui/2_pressed.png'
-dice_2 = os.path.join(os.path.abspath(os.getcwd()), file_dice_2)
 
-file_dice_3 = 'kniffel_gui/3.png'
+dice_3 = 'kniffel_gui/3.png'
 dice_3_pressed = 'kniffel_gui/3_pressed.png'
-dice_3 = os.path.join(os.path.abspath(os.getcwd()), file_dice_3)
 
-file_dice_4 = 'kniffel_gui/4.png'
+dice_4 = 'kniffel_gui/4.png'
 dice_4_pressed = 'kniffel_gui/4_pressed.png'
-dice_4 = os.path.join(os.path.abspath(os.getcwd()), file_dice_4)
 
-file_dice_5 = 'kniffel_gui/5.png'
+dice_5 = 'kniffel_gui/5.png'
 dice_5_pressed = 'kniffel_gui/5_pressed.png'
-dice_5 = os.path.join(os.path.abspath(os.getcwd()), file_dice_5)
 
-file_dice_6 = 'kniffel_gui/6.png'
+dice_6 = 'kniffel_gui/6.png'
 dice_6_pressed = 'kniffel_gui/6_pressed.png'
-dice_6 = os.path.join(os.path.abspath(os.getcwd()), file_dice_6)
 
 dices = {'1': dice_1, '2': dice_2, '3': dice_3, '4': dice_4, '5': dice_5, '6': dice_6}
 
@@ -54,7 +53,7 @@ dice5_value = 0
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
-        super().__init__(parent)
+        super(MainWindow, self).__init__(parent)
 
         self.knifwin = Ui_MainWindow()
         self.knifwin.setupUi(self)
@@ -73,10 +72,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.fourth_dice.clicked.connect(self.btn4_press)
         self.fifth_dice.clicked.connect(self.btn5_press)
 
-        # self.knifwin.calc_top.released.connect(self.calc_top)
-        # self.knifwin.calc_bottom.released.connect(self.calc_bottom)
-        # self.knifwin.calc_total.released.connect(self.calc_total)
-
         self.knifwin.tableWidget.currentCellChanged.connect(self.calc_total)
 
         self.knifwin.np_button.released.connect(self.next_player)
@@ -87,24 +82,29 @@ class MainWindow(QtWidgets.QMainWindow):
         self.fourth_dice.setStyleSheet("QPushButton{{border-image: url({0});}}".format(dice_4))
         self.fifth_dice.setStyleSheet("QPushButton{{border-image: url({0});}}".format(dice_5))
 
-        global PLAYER, PLAYERS
-        running = True
-        while running:
-            player_count = input('How many players?')
-            try:
-                player_count = int(player_count)
-                running = False
-            except:
-                print('please input a number (in digits)')
-                continue
-        PLAYER = player_count
-        for i in range(int(player_count)):
-            PLAYERS.append(i)
-        # print(PLAYERS, len(PLAYERS))
+        self.setup()
 
-        self.knifwin.tableWidget.setColumnCount(player_count + 1)
-        # PLAYERS = PLAYERS[2:]
-        # print(PLAYERS)
+        global started
+        if started:
+            self.next_player()
+            started = False
+
+    def setup(self):
+        global PLAYER, PLAYERS
+        # running = True
+        # while running:
+        # player_count = input('How many players?')
+        # try:
+        #   player_count = int(player_count)
+        #  running = False
+        # except:
+        #   print('please input a number (in digits)')
+        #  continue
+        # PLAYER = player_count
+        for i in range(int(PLAYER)):
+            PLAYERS.append(i)
+
+        self.knifwin.tableWidget.setColumnCount(PLAYER + 1)
 
         brush = QtGui.QBrush(QtGui.QColor(125, 125, 125))
         brush.setStyle(QtCore.Qt.Dense4Pattern)
@@ -146,7 +146,6 @@ class MainWindow(QtWidgets.QMainWindow):
         global throws, dice1_value, dice2_value, dice3_value, dice4_value, dice5_value
         if throws <= 2:
             throws += 1
-            # throw_string = ''
             font = QtGui.QFont()
             font.setPointSize(30)
 
@@ -154,27 +153,22 @@ class MainWindow(QtWidgets.QMainWindow):
 
             if not self.knifwin.first_roll.isDefault():
                 rolled = str(self.roll_dice(0))
-                # self.first_dice.setText(str(rolled))
                 self.style(self.first_dice, dices[rolled])
                 dice1_value = rolled
             if not self.knifwin.second_roll.isDefault():
                 rolled = str(self.roll_dice(0))
-                # self.sec_dice.setText(str(rolled))
                 self.style(self.sec_dice, dices[rolled])
                 dice2_value = rolled
             if not self.knifwin.third_roll.isDefault():
                 rolled = str(self.roll_dice(0))
-                # self.third_dice.setText(str(rolled))
                 self.style(self.third_dice, dices[rolled])
                 dice3_value = rolled
             if not self.knifwin.fourth_roll.isDefault():
                 rolled = str(self.roll_dice(0))
-                # self.fourth_dice.setText(str(rolled))
                 self.style(self.fourth_dice, dices[rolled])
                 dice4_value = rolled
             if not self.knifwin.fifth_roll.isDefault():
                 rolled = str(self.roll_dice(0))
-                # self.fifth_dice.setText(str(rolled))
                 self.style(self.fifth_dice, dices[rolled])
                 dice5_value = rolled
             self.calc_top()
@@ -186,13 +180,11 @@ class MainWindow(QtWidgets.QMainWindow):
             self.knifwin.fourth_roll.setEnabled(False)
             self.knifwin.fifth_roll.setEnabled(False)
             print('Only 3 throws possible!!')
+        self.enable_dices()
 
     def animate_click(self):
-        global PLAYER, throws
+        global PLAYER, throws, brush_1, brush_2, brush_3
 
-        brush_1 = QtGui.QBrush(QtGui.QColor(255, 0, 0))
-        brush_2 = QtGui.QBrush(QtGui.QColor(0, 255, 0))
-        brush_3 = QtGui.QBrush(QtGui.QColor(0, 0, 255))
         if throws == 1:
             self.knifwin.tableWidget.horizontalHeaderItem(PLAYER).setBackground(brush_1)
         elif throws == 2:
@@ -237,10 +229,24 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # self.roll()
 
+    def disable_dices(self):
+        self.first_dice.setEnabled(False)
+        self.sec_dice.setEnabled(False)
+        self.third_dice.setEnabled(False)
+        self.fourth_dice.setEnabled(False)
+        self.fifth_dice.setEnabled(False)
+
+    def enable_dices(self):
+        self.first_dice.setEnabled(True)
+        self.sec_dice.setEnabled(True)
+        self.third_dice.setEnabled(True)
+        self.fourth_dice.setEnabled(True)
+        self.fifth_dice.setEnabled(True)
+
     def roll_dice(self, dice):
         roll_nums = [1, 2, 3, 4, 5, 6]
         dice_roll = choice(roll_nums)
-        THROWS[dice] = dice_roll
+        # THROWS[dice] = dice_roll
         return dice_roll
 
     def btn1_press(self):
@@ -303,7 +309,6 @@ class MainWindow(QtWidgets.QMainWindow):
             self.fifth_dice.setText('')
             dice_count += 1
 
-
     def calc_top(self):
         row_content_top = list()
         for i in range(6):
@@ -363,7 +368,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 r = 0
                 self.knifwin.tableWidget.item(i, PLAYER).setText('0')
             row_content_bottom.append(r)
-        #print(row_content_bottom)
+        # print(row_content_bottom)
 
         row_counter = 0
         for item in row_content_bottom:
@@ -382,7 +387,6 @@ class MainWindow(QtWidgets.QMainWindow):
         top = int(self.knifwin.tableWidget.item(17, PLAYER).text())
         bottom = int(self.knifwin.tableWidget.item(16, PLAYER).text())
         total = top + bottom
-        # print(total)
 
         self.knifwin.tableWidget.setItem(18, PLAYER, QtWidgets.QTableWidgetItem(str(total)))
 
@@ -393,6 +397,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def next_player(self):
 
         self.reset_dices()
+        self.disable_dices()
 
         global PLAYER, throws
 
@@ -415,6 +420,69 @@ class MainWindow(QtWidgets.QMainWindow):
             self.knifwin.tableWidget.horizontalHeaderItem(PLAYER).setBackground(brush)
 
 
-wn = MainWindow()
-wn.show()
-sys.exit(app.exec_())
+class Setup_Window(QtWidgets.QMainWindow):
+    def __init__(self, parent=None):
+        global PLAYER, started
+
+        super(Setup_Window, self).__init__(parent)
+
+        self.su_wn = Ui_Setup_Window()
+        self.su_wn.setupUi(self)
+        self.setWindowTitle('Setup Kniffel!!!')
+
+        self.su_wn.pushButton.clicked.connect(self.on_to_kniffel_click)
+        self.su_wn.pushButton.clicked.connect(self.set_color)
+
+        self.su_wn.fcolor.currentIndexChanged.connect(self.set_color)
+        self.su_wn.scolor.currentIndexChanged.connect(self.set_color)
+        self.su_wn.tcolor.currentIndexChanged.connect(self.set_color)
+
+        PLAYER = self.su_wn.player_count.text()
+        started = True
+
+    def set_color(self):
+        global brush_1, brush_2, brush_3
+
+        colors = {'Red': (255, 0, 0),
+                  'Green': (0, 255, 0),
+                  'Blue': (0, 0, 255),
+                  'Purple': (185, 66, 245),
+                  'Brown': (77, 38, 0),
+                  'Black': (0, 0, 0),
+                  'Yellow': (236, 242, 56)
+                  }
+
+        sel1 = self.su_wn.fcolor.currentText()
+        sel2 = self.su_wn.scolor.currentText()
+        sel3 = self.su_wn.tcolor.currentText()
+
+        bad_word = 'select color'
+        if not sel1 == bad_word and sel2 != bad_word and sel3 != bad_word:
+            col1_1, col1_2, col1_3 = colors[sel1]
+            col2_1, col2_2, col2_3 = colors[sel2]
+            col3_1, col3_2, col3_3 = colors[sel3]
+            brush_1 = QtGui.QBrush(QtGui.QColor(col1_1, col1_2, col1_3))
+            brush_2 = QtGui.QBrush(QtGui.QColor(col2_1, col2_2, col2_3))
+            brush_3 = QtGui.QBrush(QtGui.QColor(col3_1, col3_2, col3_3))
+        else:
+            brush_1 = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+            brush_2 = QtGui.QBrush(QtGui.QColor(0, 255, 0))
+            brush_3 = QtGui.QBrush(QtGui.QColor(0, 0, 255))
+
+    def on_to_kniffel_click(self):
+        global PLAYER
+        PLAYER = int(self.su_wn.player_count.text())
+        print(PLAYER)
+        wn = MainWindow(self)
+        wn.show()
+
+
+def main():
+    app = QtWidgets.QApplication(sys.argv)
+    wn = Setup_Window()
+    wn.show()
+    sys.exit(app.exec_())
+
+
+if __name__ == '__main__':
+    main()
